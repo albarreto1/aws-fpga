@@ -50,12 +50,12 @@ logic rst_main_n_sync;
 //-------------------------------------------------
   logic        arvalid_q;
   logic [31:0] araddr_q;
-  logic [31:0] hello_world_q_byte_swapped;
+  //logic [31:0] hello_world_q_byte_swapped;
   logic [15:0] vled_q;
   logic [15:0] pre_cl_sh_status_vled;
   logic [15:0] sh_cl_status_vdip_q;
   logic [15:0] sh_cl_status_vdip_q2;
-  logic [31:0] hello_world_q;
+  //logic [31:0] hello_world_q;
   logic [31:0] wirex;
   logic [31:0] wirey;
   logic [31:0] wirez;
@@ -269,19 +269,41 @@ always_ff @(posedge clk_main_a0)
 //-------------------------------------------------
 // When read it, returns the byte-flipped value.
 
+//always_ff @(posedge clk_main_a0)
+//   if (!rst_main_n_sync) begin                    // Reset
+//      hello_world_q[31:0] <= 32'h0000_0000;
+//  end
+//   else if (wready & (wr_addr == `HELLO_WORLD_REG_ADDR)) begin  
+//      hello_world_q[31:0] <= wdata[31:0];
+//   end
+//   else begin                                // Hold Value
+//      hello_world_q[31:0] <= hello_world_q[31:0];
+//   end
+
 always_ff @(posedge clk_main_a0)
    if (!rst_main_n_sync) begin                    // Reset
-      hello_world_q[31:0] <= 32'h0000_0000;
+      wirex[31:0] <= 32'h0000_0000;
    end
-   else if (wready & (wr_addr == `HELLO_WORLD_REG_ADDR)) begin  
-      hello_world_q[31:0] <= wdata[31:0];
+   else if (wready & (wr_addr == `X_REG_ADDR)) begin  
+      wirex[31:0] <= wdata[31:0];
    end
    else begin                                // Hold Value
-      hello_world_q[31:0] <= hello_world_q[31:0];
+      wirex[31:0] <= wirex[31:0];
    end
 
-assign hello_world_q_byte_swapped[31:0] = {hello_world_q[7:0],   hello_world_q[15:8],
-                                           hello_world_q[23:16], hello_world_q[31:24]};
+always_ff @(posedge clk_main_a0)
+   if (!rst_main_n_sync) begin                    // Reset
+      wirey[31:0] <= 32'h0000_0000;
+   end
+   else if (wready & (wr_addr == `Y_REG_ADDR)) begin  
+      wirey[31:0] <= wdata[31:0];
+   end
+   else begin                                // Hold Value
+      wirey[31:0] <= wirey[31:0];
+   end
+
+//assign hello_world_q_byte_swapped[31:0] = {hello_world_q[7:0],   hello_world_q[15:8],
+//                                           hello_world_q[23:16], hello_world_q[31:24]};
 
 assign wirez[31:0] = wirex[31:0] + wirey[31:0];
 
