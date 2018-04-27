@@ -37,7 +37,9 @@
 
 #define HELLO_WORLD_REG_ADDR UINT64_C(0x500)
 #define VLED_REG_ADDR	UINT64_C(0x504)
-
+#define X_REG_ADDR      UINT64_C(0x508)
+#define Y_REG_ADDR      UINT64_C(0x50C)
+#define Z_REG_ADDR      UINT64_C(0x510)
 /* use the stdout logger for printing debug information  */
 #ifndef SV_TEST
 const struct logger *logger = &logger_stdout;
@@ -254,6 +256,63 @@ int peek_poke_example(uint32_t value, int slot_id, int pf_id, int bar_id) {
         printf("TEST FAILED");
         printf("Resulting value did not match expected value 0x%x. Something didn't work.\n", expected);
     }
+
+    //adder
+
+    /* write a value into the mapped address space */
+
+    uint32_t x,y;
+
+    x=2;
+
+    y=3;
+
+    expected = x+y;
+
+    printf("Writing 0x%08x to X register (0x%016lx)\n", x, X_REG_ADDR);
+
+    rc = fpga_pci_poke(pci_bar_handle, X_REG_ADDR, x);
+
+    fail_on(rc, out, "Unable to write to the fpga !");
+
+    printf("Writing 0x%08x to Y register (0x%016lx)\n", y, Y_REG_ADDR);
+
+    rc = fpga_pci_poke(pci_bar_handle, Y_REG_ADDR, y);
+
+    fail_on(rc, out, "Unable to write to the fpga !");
+
+    /* read it back and print it out; you should expect the byte order to be
+
+     * reversed (That's what this CL does) */
+
+    rc = fpga_pci_peek(pci_bar_handle, Z_REG_ADDR, &value);
+
+    fail_on(rc, out, "Unable to read read from the fpga !");
+
+    printf("=====  Entering peek_poke_example =====\n");
+
+    printf("register: 0x%x\n", value);
+
+    printf("=====  Entering peek_poke_example =====\n");
+
+    printf("registers x and y: 0x%x\n 0x%x\n", x,y);
+
+    if(value == expected) {
+
+        printf("TEST PASSED");
+
+        printf("Resulting value matched expected value 0x%x. It worked!\n", expected);
+
+    }
+
+    else{
+
+        printf("TEST FAILED");
+
+        printf("Resulting value did not match expected value 0x%x. Something didn't work.\n", expected);  
+
+  }
+    
 out:
     /* clean up */
     if (pci_bar_handle >= 0) {

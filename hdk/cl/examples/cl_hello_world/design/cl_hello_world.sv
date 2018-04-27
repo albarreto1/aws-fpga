@@ -56,7 +56,9 @@ logic rst_main_n_sync;
   logic [15:0] sh_cl_status_vdip_q;
   logic [15:0] sh_cl_status_vdip_q2;
   logic [31:0] hello_world_q;
-
+  logic [31:0] wirex;
+  logic [31:0] wirey;
+  logic [31:0] wirez;
 //-------------------------------------------------
 // ID Values (cl_hello_world_defines.vh)
 //-------------------------------------------------
@@ -280,6 +282,8 @@ always_ff @(posedge clk_main_a0)
 
 assign hello_world_q_byte_swapped[31:0] = {hello_world_q[7:0],   hello_world_q[15:8],
                                            hello_world_q[23:16], hello_world_q[31:24]};
+
+assign wirez[31:0] = wirex[31:0] + wirey[31:0];
 
 //-------------------------------------------------
 // Virtual LED Register
