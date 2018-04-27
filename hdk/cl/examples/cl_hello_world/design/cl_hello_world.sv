@@ -260,6 +260,7 @@ always_ff @(posedge clk_main_a0)
       rvalid <= 1;
       rdata  <= (araddr_q == `HELLO_WORLD_REG_ADDR) ? hello_world_q_byte_swapped[31:0]:
                 (araddr_q == `VLED_REG_ADDR       ) ? {16'b0,vled_q[15:0]            }:
+		 (araddr_q == `Z_REG_ADDR       ) ? wirez[31:0]:
                                                       `UNIMPLEMENTED_REG_VALUE        ;
       rresp  <= 0;
    end
